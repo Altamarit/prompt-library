@@ -17,9 +17,24 @@ CREATE TABLE public.profiles (
 
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Users can read own profile"
+-- Helper function to check admin role without recursive RLS
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS boolean
+LANGUAGE sql
+SECURITY DEFINER
+STABLE
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE id::text = auth.jwt() ->> 'sub'
+      AND role = 'admin'
+  );
+$$;
+
+CREATE POLICY "Anyone authenticated can read profiles"
   ON public.profiles FOR SELECT
-  USING (id::text = auth.jwt() ->> 'sub');
+  USING (auth.jwt() IS NOT NULL);
 
 CREATE POLICY "Users can update own profile"
   ON public.profiles FOR UPDATE
@@ -29,28 +44,9 @@ CREATE POLICY "Users can insert own profile"
   ON public.profiles FOR INSERT
   WITH CHECK (id::text = auth.jwt() ->> 'sub');
 
-CREATE POLICY "Admins can read all profiles"
-  ON public.profiles FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles p
-      WHERE p.id::text = auth.jwt() ->> 'sub' AND p.role = 'admin'
-    )
-  );
-
 CREATE POLICY "Admins can update all profiles"
   ON public.profiles FOR UPDATE
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles p
-      WHERE p.id::text = auth.jwt() ->> 'sub' AND p.role = 'admin'
-    )
-  );
-
--- Public read for display_name and avatar (community features)
-CREATE POLICY "Public can read basic profile info"
-  ON public.profiles FOR SELECT
-  USING (true);
+  USING (public.is_admin());
 
 -- ============================================================
 -- 2. USAGES (prompt categories)
@@ -109,12 +105,7 @@ CREATE POLICY "Users can delete own collections"
 
 CREATE POLICY "Admins can manage all collections"
   ON public.collections FOR ALL
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles p
-      WHERE p.id::text = auth.jwt() ->> 'sub' AND p.role = 'admin'
-    )
-  );
+  USING (public.is_admin());
 
 -- ============================================================
 -- 4. PROMPTS
@@ -171,12 +162,7 @@ CREATE POLICY "Users can delete own prompts"
 
 CREATE POLICY "Admins can manage all prompts"
   ON public.prompts FOR ALL
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles p
-      WHERE p.id::text = auth.jwt() ->> 'sub' AND p.role = 'admin'
-    )
-  );
+  USING (public.is_admin());
 
 -- ============================================================
 -- 5. PROMPT VERSIONS
@@ -271,12 +257,7 @@ CREATE POLICY "Users can insert own usage logs"
 
 CREATE POLICY "Admins can read all usage logs"
   ON public.prompt_usage_logs FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles p
-      WHERE p.id::text = auth.jwt() ->> 'sub' AND p.role = 'admin'
-    )
-  );
+  USING (public.is_admin());
 
 -- ============================================================
 -- 8. XP EVENTS
@@ -303,12 +284,7 @@ CREATE POLICY "Users can read own xp events"
 
 CREATE POLICY "Admins can read all xp events"
   ON public.xp_events FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles p
-      WHERE p.id::text = auth.jwt() ->> 'sub' AND p.role = 'admin'
-    )
-  );
+  USING (public.is_admin());
 
 CREATE POLICY "System can insert xp events"
   ON public.xp_events FOR INSERT
@@ -344,12 +320,7 @@ CREATE POLICY "Users can read own reports"
 
 CREATE POLICY "Admins can manage all reports"
   ON public.prompt_reports FOR ALL
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles p
-      WHERE p.id::text = auth.jwt() ->> 'sub' AND p.role = 'admin'
-    )
-  );
+  USING (public.is_admin());
 
 -- ============================================================
 -- 10. MODELS (LLM configuration)
@@ -374,12 +345,7 @@ CREATE POLICY "Anyone authenticated can read models"
 
 CREATE POLICY "Admins can manage models"
   ON public.models FOR ALL
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles p
-      WHERE p.id::text = auth.jwt() ->> 'sub' AND p.role = 'admin'
-    )
-  );
+  USING (public.is_admin());
 
 -- ============================================================
 -- 11. PROMPT MODEL STATS (optional)
