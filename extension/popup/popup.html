@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prompt Library</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; width: 380px; background: #fafafa; color: #18181b; }
+    .header { padding: 16px; background: #fff; border-bottom: 1px solid #e4e4e7; display: flex; align-items: center; gap: 10px; }
+    .header .logo { width: 28px; height: 28px; background: #2563eb; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 12px; }
+    .header h1 { font-size: 16px; font-weight: 600; }
+    .content { padding: 16px; }
+    .login-view { text-align: center; padding: 40px 16px; }
+    .login-view p { color: #71717a; margin-bottom: 16px; }
+    button { cursor: pointer; border: none; border-radius: 8px; padding: 10px 16px; font-size: 14px; font-weight: 500; transition: background 0.15s; }
+    .btn-primary { background: #2563eb; color: #fff; width: 100%; }
+    .btn-primary:hover { background: #1d4ed8; }
+    .btn-secondary { background: #f4f4f5; color: #18181b; width: 100%; }
+    .btn-secondary:hover { background: #e4e4e7; }
+    .btn-small { padding: 6px 12px; font-size: 12px; }
+    input, textarea, select { width: 100%; padding: 8px 12px; border: 1px solid #d4d4d8; border-radius: 8px; font-size: 14px; font-family: inherit; background: #fff; }
+    textarea { resize: vertical; min-height: 80px; }
+    select { appearance: auto; }
+    label { display: block; font-size: 12px; font-weight: 500; color: #71717a; margin-bottom: 4px; }
+    .field { margin-bottom: 12px; }
+    .tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+    .tab { flex: 1; text-align: center; padding: 8px; border-radius: 6px; font-size: 13px; font-weight: 500; background: #f4f4f5; color: #71717a; }
+    .tab.active { background: #2563eb; color: #fff; }
+    .prompt-item { padding: 12px; background: #fff; border: 1px solid #e4e4e7; border-radius: 8px; margin-bottom: 8px; }
+    .prompt-item h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .prompt-item p { font-size: 12px; color: #71717a; line-height: 1.4; }
+    .prompt-item .meta { display: flex; gap: 8px; margin-top: 6px; font-size: 11px; color: #a1a1aa; }
+    .prompt-actions { display: flex; gap: 6px; margin-top: 8px; }
+    .success { text-align: center; padding: 24px; }
+    .success .icon { font-size: 32px; margin-bottom: 8px; }
+    .success p { color: #71717a; }
+    .success .actions { margin-top: 16px; display: flex; gap: 8px; }
+    .hidden { display: none; }
+    .loading { text-align: center; padding: 24px; color: #71717a; }
+    .search-box { margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">PL</div>
+    <h1>Prompt Library</h1>
+  </div>
+
+  <!-- Login view -->
+  <div id="login-view" class="login-view hidden">
+    <p>Inicia sesión para usar la librería</p>
+    <button class="btn-primary" id="btn-login">Login con Google</button>
+  </div>
+
+  <!-- Save prompt view -->
+  <div id="save-view" class="content hidden">
+    <h2 style="font-size:15px; font-weight:600; margin-bottom:12px;">Guardar prompt</h2>
+    <div class="field">
+      <label for="save-title">Título</label>
+      <input id="save-title" placeholder="Nombre del prompt" />
+    </div>
+    <div class="field">
+      <label for="save-text">Texto del prompt</label>
+      <textarea id="save-text"></textarea>
+    </div>
+    <div class="field">
+      <label for="save-usage">Uso</label>
+      <select id="save-usage"><option value="">Seleccionar...</option></select>
+    </div>
+    <div class="field">
+      <label for="save-collection">Colección</label>
+      <select id="save-collection"><option value="">Seleccionar...</option></select>
+    </div>
+    <button class="btn-primary" id="btn-save">Guardar</button>
+  </div>
+
+  <!-- Use prompt view -->
+  <div id="use-view" class="content hidden">
+    <div class="search-box">
+      <input id="use-search" placeholder="Buscar prompts..." />
+    </div>
+    <div id="use-results"></div>
+  </div>
+
+  <!-- Success view -->
+  <div id="success-view" class="success hidden">
+    <div class="icon">✓</div>
+    <p>Prompt guardado correctamente</p>
+    <div class="actions">
+      <button class="btn-secondary" id="btn-close">Cerrar</button>
+      <button class="btn-primary" id="btn-open-web">Abrir en la web</button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "Prompt Library",
+  "version": "1.0.0",
+  "description": "Guarda y usa prompts desde cualquier web con botón derecho",
+  "permissions": [
+    "contextMenus",
+    "storage",
+    "activeTab",
+    "identity"
+  ],
+  "host_permissions": [
+    "http://localhost:3000/*",
+    "https://*.vercel.app/*",
+    "https://prompt-library-5h93jjx2j-alextamaritb-5351s-projects.vercel.app/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "Prompt Library"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "key": ""
+}
