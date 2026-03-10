@@ -1,4 +1,4 @@
-const API_BASE = 'https://prompt-library-5h93jjx2j-alextamaritb-5351s-projects.vercel.app';
+const API_BASE = 'https://prompt-library-self.vercel.app';
 
 let currentMode = 'save';
 let savedPromptId = null;
